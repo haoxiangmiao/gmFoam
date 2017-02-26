@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-#include <iostream>
-=======
+
 /********************************************************************************************************
 * File:              gmFoamTranslator.cpp                                              
 * Author:            Hexiang                                     | Boris Jeremic,                       *
@@ -16,7 +14,7 @@
 * with the terms and conditions stipulated in the agreement/contract under which the program have been  *
 * supplied.                                                                                             *
 *********************************************************************************************************/
->>>>>>> f7c53806091af1e8efa2b2b91419d2ec6771cbc0
+#include <iostream>
 #include "gmFoamTranslator.h"
 #include "string_operator.h"
 #include <stdio.h>
@@ -33,8 +31,7 @@
 #include <sys/stat.h>
 
 using namespace std;
-ert
-erttjei
+
 
 using namespace gmfoam_ns;
 
