@@ -1,0 +1,33 @@
+GmESSI.loadMshFile("test_model.msh")
+
+[Define_Model_Name{ModelName:= "test_model"}]
+
+[Add_All_Node{Unit:= m, NumDofs:= 3}]
+
+
+[Add_Linear_Elastic_Isotropic_3D{MaterialNo:= 3, Density:= 2146*kg/m^3, ElasticModulus:=  37782251.8*N/m^2, PoissonRatio:= 0.4800}]
+[Add_Linear_Elastic_Isotropic_3D{MaterialNo:= 4, Density:= 2146*kg/m^3, ElasticModulus:=  37782251.8*N/m^2, PoissonRatio:= 0.4800}]
+
+
+#physical group 3: outside layer 2. physical group 4: outside layer 3
+[Add_8NodeBrick{Physical_Group#3, MaterialNo:= 3 }]
+[Add_8NodeBrick{Physical_Group#4, MaterialNo:= 4 }]
+
+
+[Add_Acceleration_Field{FieldNo:= 1, AccX:= 0*g, AccY:= 0*g, AccZ:= -1*g}]
+
+[Fix_Dofs{Physical_Group#15, DofTypes:= ux uy uz}]
+
+[New_Loading_Stage{StageName:= "self_weight"}]
+[Include{FileName:= "test_model_geometry.fei"}]
+
+[Include{FileName:= "test_model_load.fei"}]
+
+[Add_Self_Weight_To_All_Elements{FieldNo:= 1}]
+
+[Define_Solver{SolverName:= Parallel}]
+[Define_Algorithm{AlgoType:= With_no_convergence_check}]
+[Define_Load_Factor_Increment{Incr:= 1}]
+[Simulate_Using_Static_Algorithm{NumSteps:= 1}]
+
+[Bye{}]

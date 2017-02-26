@@ -1,0 +1,13 @@
+#!/bin/bash
+export SOURCE_DIR=/home/hexiang/git/gmFoam/SRC
+export CURRENT_DIR=$PWD
+if [ -d "./$1" ]
+then
+	rm -r ./$1
+fi
+
+mkdir ./$1
+
+cp -r $SOURCE_DIR/input_template/* $CURRENT_DIR/$1
+source /home/hexiang/OpenFOAM/OpenFOAM-v1612+/etc/bashrc
+gmshToFoam *.msh -case $1
