@@ -27,7 +27,24 @@ int main(int argc, char const *argv[])
 	tr2.set_all();
 	tr2.execute_command();
 
-	// string s3="<set_Con>[term]{}"
+
+	string s4="<set_system>[system_file]{fvSolution}[variable]{solvers}{p}{solver}[value]{hexiangwang}";
+	gmFoamTranslator tr4=gmFoamTranslator(s4);
+	tr4.set_all();
+	tr4.execute_command();
+
+	string s5="<set_system>[system_file]{fvSolution}[variable]{PISO}{pRefCell}[value]{hexiangwang}";
+	gmFoamTranslator tr5=gmFoamTranslator(s5);
+	tr5.set_all();
+	tr5.execute_command();
+
+	string s6="<set_system>[system_file]{controlDict}[variable]{application}[value]{Heeeeee}";
+	gmFoamTranslator tr6=gmFoamTranslator(s6);
+	tr6.set_all();
+	tr6.execute_command();
+
+	// string s3="<set_system>[system_file]{controlDict}[variable_name]{startTime}[value]{0}";
+
 	// string s3="<set_boundary> [variable]{U}[boundary_name]{top_surface}[type]{fixedValue}[value}[uniform(1 0 0)]";
 	
 	// string s4="<set_boundary_condition_U> [boundary_name]{bottom_surface}[type]{noslip}[value}[]";

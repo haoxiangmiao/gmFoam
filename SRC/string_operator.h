@@ -36,6 +36,10 @@ class string_operator
 		std::regex_iterator<std::string::iterator> search_reg(std::regex e);
 		void replace_reg(std::regex e, string& replace_str);
 		void readfile2string(string Dir);
+		void set_string(string& str);
+		string balanced_extractor(string& s1, string& opening_flag, string& closing_flag);    //s1 is the beginning string before opening_flag
+		void balanced_replace(string& insert_str, string& s1, string& opening_flag, string& closing_flag);   //s1 is the beginning string before opening_flag
+
 	private:
 		string s;
 

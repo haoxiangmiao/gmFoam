@@ -94,7 +94,7 @@ void gmFoamTranslator::set_funcMap()
 	this->funcMap["load_mesh"]=&gmFoamTranslator::load_mesh;
 	this->funcMap["define_transportProperties"]=&gmFoamTranslator::define_transportProperties;
 	this->funcMap["define_boundaryGeometry"]=&gmFoamTranslator::define_boundaryGeometry;
-	// this->funcMap["set_boundary_condition_U"]=&gmFoamTranslator::set_boundary_condition_U;
+	this->funcMap["set_system"]=&gmFoamTranslator::set_system;
 }
 // ##################################################################################################################################################### 
 
@@ -215,11 +215,82 @@ string gmFoamTranslator::getFilePath()
 	return FilePath;
 }
 
-// void gmFoamTranslator::set_boundary_condition_U()
-// {
-// 	extern string project_name;
-// 	string s= project_name;
-// 	string Dir=getFilePath();
-// 	Dir=Dir+"/"+s+"//";
-// }
+void gmFoamTranslator::set_system()
+{
+	extern string project_name;
+	string s= project_name;
+	string Dir=getFilePath();
+	Dir=Dir+"/"+s+"/"+"system/"+(this->parameter)[0];
+	string_operator so;
+	so.readfile2string(Dir);
+	int No_parameter=(this->parameter).size();
+	string opening_flag="{";
+	string closing_flag="}";
+
+	std::vector<string> original_string;
+	original_string.push_back(so.get_string());
+
+
+	for(int i=0; i<No_parameter-3; ++i)
+	{
+		string temp_s=so.balanced_extractor((this->parameter)[1+i],opening_flag,closing_flag);
+		original_string.push_back(temp_s);
+		so.set_string(temp_s);
+	}
+
+	int No_original_string=original_string.size();
+	string reg_str=(this->parameter)[No_parameter-2]+"[\\s]*[a-zA-Z0-9]+;";
+	string replace_str=(this->parameter)[No_parameter-2]+"\t"+(this->parameter)[No_parameter-1]+";";
+	std::regex e (reg_str);
+	so.replace_reg(e,replace_str);
+	string new_string=so.get_string();
+
+	for(int j=0; j<No_original_string-1; ++j)
+	{
+		string_operator so_temp=string_operator(original_string[No_original_string-2-j]);
+		so_temp.balanced_replace(new_string,(this->parameter)[No_parameter-3-j],opening_flag, closing_flag);
+		new_string=so_temp.get_string();
+	}
+
+	std::ofstream out(Dir);
+	out<<new_string;
+	out.close();
+
+
+
+	//###########################temporary code###################################################################
+
+
+	// string temp_s=so.balanced_extractor((this->parameter)[1],opening_flag,closing_flag);
+	// cout<<temp_s<<endl;
+	// string_operator so_1=string_operator(temp_s);
+
+	// string temp_s_1=so_1.balanced_extractor((this->parameter)[2],opening_flag,closing_flag);
+	// cout<<temp_s_1<<endl;
+
+	// string_operator so_2=string_operator(temp_s_1);
+
+
+	// string reg_str=(this->parameter)[No_parameter-2]+"[\\s]*[a-zA-Z0-9]+;";
+	// string replace_str=(this->parameter)[No_parameter-2]+"\t"+(this->parameter)[No_parameter-1]+";";
+	// std::regex e (reg_str);
+	// so_2.replace_reg(e,replace_str);
+
+	// cout<<so_2.get_string();
+
+	// string new_str=so_2.get_string();
+
+	// so_1.balanced_replace(new_str,(this->parameter)[2],opening_flag,closing_flag);
+
+	// cout<<so_1.get_string();
+
+
+
+
+
+//########################temprary code#######################################################
+
+}
+
+
 //###########################################################################################################

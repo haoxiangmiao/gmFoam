@@ -19,7 +19,7 @@ application     icoFoam;
 
 startFrom       startTime;
 
-startTime       swer0;
+startTime       0;
 
 stopAt          endTime;
 

@@ -27,11 +27,9 @@ string project_name="";
 
 namespace gmfoam_ns
 {
-	namespace transportProperties
-	{
-		string reserved_template="";
-	}
-
+	// ####################define some file directory#######################################################
+	// std::map<std::string, std::string> system_dir_mapping;
+	// system_dir_mapping["contr"]
 
 
 };

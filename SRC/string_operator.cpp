@@ -123,3 +123,94 @@ void string_operator::readfile2string(string Dir)
 		this->s=temp_s;
 	};
 }
+
+string string_operator::balanced_extractor(string& s1, string& opening_flag, string& closing_flag)   //s1 is beginning string
+{
+	string ret="";
+	std::size_t found = (this->s).find(s1);
+	// cout<<(this->s)<<endl;
+	if (found!=std::string::npos)
+	{
+		string::iterator it=s.begin()+found+s1.length();
+
+		for(; it<(this->s).end(); ++it)
+		{
+			// cout<<(*it);
+			if(get_string_component(it)==opening_flag)
+			{
+				it=it+1;
+				int counter=1;
+				while(counter>0)
+				{
+					ret=ret+(*it);
+					if(get_string_component(it)==opening_flag)
+					{
+						counter=counter+1;
+					}
+					if(get_string_component(it)==closing_flag)
+					{
+						counter=counter-1;
+					}
+					it=it+1;
+				}
+				int str_len=ret.length();
+				return ret.substr(0,str_len-1);
+			}
+
+		}
+		return ret;
+
+	}
+	else
+	{
+		cout<<"could not find the string!!"<<s1<<endl;
+		return ret;
+	}
+
+}
+
+
+void string_operator::set_string(string& str)
+{
+	this->s=str;
+}
+
+void string_operator::balanced_replace(string& insert_str, string& s1, string& opening_flag, string& closing_flag)
+{
+	std::size_t found = (this->s).find(s1);
+	
+	if (found!=std::string::npos)
+	{
+		string::iterator it=s.begin()+found+s1.length();
+
+		while(get_string_component(it)!=opening_flag)  //end this while loop while lead (*it)=opening_flag
+		{
+			it=it+1;
+		}
+		int insert_pos=it-s.begin()+1;
+		int counter=1;
+		it=it+1;
+		while(counter>0)
+		{
+			(this->s).erase(it);
+			if(get_string_component(it)==opening_flag)
+			{
+				counter=counter+1;
+			}
+			// it=it+1;                                        //Attention: every deletion will change the (*it) do not need to do it=it+1 
+			if(get_string_component(it)==closing_flag)
+			{
+				counter=counter-1;
+			}
+
+		}
+		(this->s).insert(insert_pos,insert_str);
+
+	}
+	else
+	{
+		cout<<"could not find the string!!"<<s1<<endl;
+	}
+
+}
+

@@ -54,9 +54,9 @@ class gmFoamTranslator{
 		void define_transportProperties();
 		void define_boundaryGeometry();
 		void execute_command();
+		void set_system();
 		string getFilePath();
-		void set_boundary_condition_U();
-
+		
 
 
 	private:

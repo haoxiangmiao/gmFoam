@@ -34,5 +34,5 @@ mesh_conversion: $(SOURCE_DIR)/gmsh_conversion_reserved
 	@sudo ln -sf $(SOURCE_DIR)/gmsh_conversion /usr/local/bin
 	@cd /usr/local/bin ; sudo chmod +x gmsh_conversion
 
-demo: clean string_operator
-	$(TOOUT) demo.cpp -o demo -L$(BUILD_DIR) -lstring_operator -Wl,-rpath=$(BUILD_DIR)
+# demo: clean string_operator
+# 	$(TOOUT) demo.cpp -o demo -L$(BUILD_DIR) -lstring_operator -Wl,-rpath=$(BUILD_DIR)
