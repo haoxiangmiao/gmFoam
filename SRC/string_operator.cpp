@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-02-04 20:27:17                                     *            
+*                           Last Modified time: 2017-03-04 23:13:12                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -65,6 +65,24 @@ vector<string> string_operator::string_extractor(string& s1, string opening_flag
 	}
 
 	return ret;
+}
+
+std::vector<string> string_operator::string_separator(string& s1, string separator)
+{
+	vector<string> ret;
+	string temp_string="";
+	string::iterator it=s1.begin();
+	for(; it<s1.end(); it++)
+	{
+		while((get_string_component(it)!=separator)&&(it<s1.end()))
+		{
+			temp_string=temp_string+get_string_component(it);
+			it=it+1;
+		}
+		ret.push_back(temp_string);
+		temp_string="";
+	}
+	return ret;	
 }
 
 string string_operator::delete_space(string& s2)
@@ -163,7 +181,7 @@ string string_operator::balanced_extractor(string& s1, string& opening_flag, str
 	}
 	else
 	{
-		cout<<"could not find the string!!"<<s1<<endl;
+		ret="NOT FOUND";// cout<<"could not find the string!!"<<s1<<endl;
 		return ret;
 	}
 

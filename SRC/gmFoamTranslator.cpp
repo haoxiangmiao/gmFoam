@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-02-27 20:46:55                                     *            
+*                           Last Modified time: 2017-03-05 00:18:25                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -28,11 +28,12 @@
 #include <limits.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include "boundary_type.h"
 
 using namespace std;
 
 
-using namespace gmfoam_ns;
+// using namespace gmfoam_ns;
 
 
 gmFoamTranslator::gmFoamTranslator(){}
@@ -94,6 +95,7 @@ void gmFoamTranslator::set_funcMap()
 	this->funcMap["define_transportProperties"]=&gmFoamTranslator::define_transportProperties;
 	this->funcMap["define_boundaryGeometry"]=&gmFoamTranslator::define_boundaryGeometry;
 	this->funcMap["set_system"]=&gmFoamTranslator::set_system;
+	this->funcMap["set_boundary_condition"]=&gmFoamTranslator::set_boundary_condition;
 }
 // ##################################################################################################################################################### 
 
@@ -255,41 +257,124 @@ void gmFoamTranslator::set_system()
 	out<<new_string;
 	out.close();
 
+}
 
 
-	//###########################temporary code###################################################################
+void gmFoamTranslator::set_boundary_condition()
+{
+	extern string project_name;
+	string s= project_name;
+	string Dir=getFilePath();
 
+	// First we need to get startTime
+	Dir=Dir+"/"+s+"/"+"system/controlDict";
+	string_operator so;
+	so.readfile2string(Dir);
+	string temp=so.get_string();
 
-	// string temp_s=so.balanced_extractor((this->parameter)[1],opening_flag,closing_flag);
-	// cout<<temp_s<<endl;
-	// string_operator so_1=string_operator(temp_s);
+	std::regex e("startTime[\\s]*([0-9\\.]+);");
+	std::regex_iterator<std::string::iterator> rit ( temp.begin(), temp.end(), e );
+	string temp_str=rit->str();
 
-	// string temp_s_1=so_1.balanced_extractor((this->parameter)[2],opening_flag,closing_flag);
-	// cout<<temp_s_1<<endl;
+	std::smatch sm;
+	std::regex_match(temp_str,sm,e);    //sm[1] is the starttime extract from syatem file
 
-	// string_operator so_2=string_operator(temp_s_1);
+	string Boundary_file=sm[1];
+	std::map<std::string, std::string> file_map { {"U",U_header},{"p",P_header} };
 
+	string Dir_temp=getFilePath()+"/"+s+"/"+Boundary_file+"/"+(this->parameter)[0];
+	string file_dir=getFilePath()+"/"+s+"/"+Boundary_file;
 
-	// string reg_str=(this->parameter)[No_parameter-2]+"[\\s]*[a-zA-Z0-9]+;";
-	// string replace_str=(this->parameter)[No_parameter-2]+"\t"+(this->parameter)[No_parameter-1]+";";
-	// std::regex e (reg_str);
-	// so_2.replace_reg(e,replace_str);
+	std::ifstream input(Dir_temp);
+	if (!input)   //initial boundary file does not exist...
+	{
+		//###################test if initial boundary condition file exists or not ##########################################
+		struct stat st;
+		if(stat(file_dir.c_str(),&st)!=0)
+		{
+			// cout<<"directory does not exist"<<endl;
+			string mk_str="mkdir  "+file_dir;
+			system(mk_str.c_str());
+		}
 
-	// cout<<so_2.get_string();
+		//###################################################################################################################
+		
+		string temp_str=header+file_map[(this->parameter)[0]];
+	
+		if((this->parameter)[1]=="dimensions")
+		{
+			string continuous_unit=(this->parameter)[2];
+			string unit="";
+			for(string::iterator it=continuous_unit.begin(); it<continuous_unit.end(); ++it)
+			{
+				if((*it)!='-')
+				{
+					unit=unit+(*it)+" ";
+				}
+				else
+				{
+					unit=unit+(*it);
+				}
+				
+			}
+			temp_str=temp_str+"\ndimensions      ["+unit+"];\n";
+			// Dir_temp=Dir_temp+"/"+(this->parameter)[0];
+			std::ofstream out(Dir_temp);
+			out<<temp_str;
+			out.close();
+		}
+		else
+		{
+			cout<<"please specify the dimensions for boundary condition field "<<(this->parameter)[0]<<endl;
+		}
+	}
 
-	// string new_str=so_2.get_string();
+	else
+	{
+		string_operator so1;
+		so1.readfile2string(Dir_temp);
+		string original_string=so1.get_string();
+		int No_parameter=(this->parameter).size();
+		boundary_type bt=boundary_type((this->parameter)[No_parameter-1]);
 
-	// so_1.balanced_replace(new_str,(this->parameter)[2],opening_flag,closing_flag);
+		// cout<<bt.get_string()<<endl;
 
-	// cout<<so_1.get_string();
+		string value=bt.generateBC();
 
+		// cout<<value<<endl;
 
+		string opening_flag="{";
+		string closing_flag="}";
 
+		if((this->parameter)[1]=="internalField")
+		{
+			original_string=original_string+"\ninternalField   "+value;
+		}
+		if((this->parameter)[1]=="boundaryField")
+		{
+			string boundary_temp=so1.balanced_extractor((this->parameter)[1],opening_flag,closing_flag);
+			if(boundary_temp=="NOT FOUND")
+			{
+				original_string=original_string+"boundaryField\n{\n    "+(this->parameter)[2]+"\n    {\n        "+(this->parameter)[3]+"            "+value+"    }\n\n}";
 
+			}
+			else
+			{
+				boundary_temp=boundary_temp+"\n    "+(this->parameter)[2]+"\n    {\n        "+(this->parameter)[3]+"            "+value+"\n    }\n";
+				so1.balanced_replace(boundary_temp,(this->parameter)[1],opening_flag,closing_flag);
+				original_string=so1.get_string();
+			}
 
-//########################temprary code#######################################################
+		}
+		std::ofstream out(Dir_temp);
+		out<<original_string;
+		out.close();
+	};
+
 
 }
+
+
 
 
 //###########################################################################################################

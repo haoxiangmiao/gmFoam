@@ -15,11 +15,11 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application	Heeeeee;
+application     icoFoam;
 
 startFrom       startTime;
 
-startTime       0;
+startTime	2.3;
 
 stopAt          endTime;
 

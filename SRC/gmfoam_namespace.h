@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-02-27 20:43:28                                     *            
+*                           Last Modified time: 2017-03-04 23:48:45                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -22,13 +22,15 @@
 #include <vector>
 #include <functional>
 #include <map>
+#include "string_operator.h"
 #include <fstream>
 #include <streambuf>
 
 
-using namespace::std;
+// using namespace::std;
 
 extern string project_name;
+
 string project_name="";
 #ifdef _WIN32 
     #include <direct.h>
@@ -40,12 +42,10 @@ string project_name="";
 	#define slash "/"
 #endif
 
-namespace gmfoam_ns
-{
-	// ####################define some file directory#######################################################
-	// std::map<std::string, std::string> system_dir_mapping;
-	// system_dir_mapping["contr"]
+#define U_header "FoamFile\n{\n    version     2.0;\n    format      ascii;\n    class       volVectorField;\n    object      U;\n}\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
+#define header "/*--------------------------------*- C++ -*----------------------------------*\\\n| =========                 |                                                 |\n| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n|  \\\\    /   O peration     | Version:  plus                                  |\n|   \\\\  /    A nd           | Web:      www.OpenFOAM.com                      |\n|    \\\\/     M anipulation  |                                                 |\n\\*---------------------------------------------------------------------------*/\n"
+// std::map<std::string, std::string> file_map { {"U",U_header}  };
+#define P_header "FoamFile\n{\n    version     2.0;\n    format      ascii;\n    class       volScalarField;\n    object      p;\n}\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
 
 
-};
 #endif

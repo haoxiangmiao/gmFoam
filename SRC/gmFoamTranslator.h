@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-02-04 20:26:35                                     *            
+*                           Last Modified time: 2017-03-04 20:32:03                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -30,9 +30,10 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include "string_operator.h"
+#include "boundary_type.h"
 
 using namespace::std;
-using namespace gmfoam_ns;
+// using namespace gmfoam_ns;
 
 
 class gmFoamTranslator{
@@ -55,6 +56,7 @@ class gmFoamTranslator{
 		void define_boundaryGeometry();
 		void execute_command();
 		void set_system();
+		void set_boundary_condition();
 		string getFilePath();
 		
 

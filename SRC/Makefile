@@ -32,8 +32,14 @@ gmFoamTranslator: gmFoamTranslator.cpp
 				$(TOSO) libgmFoamTranslator.so gmFoamTranslator.o
 				@mv ./gmFoamTranslator.o $(BUILD_DIR)
 				@mv ./libgmFoamTranslator.so $(BUILD_DIR)
-try: string_operator gmFoamTranslator mesh_conversion
-	$(TOOUT) try.cpp -o try -L$(BUILD_DIR)  -lgmFoamTranslator -lstring_operator -Wl,-rpath=$(BUILD_DIR)
+boundary_type: boundary_type.cpp
+				$(TOO) boundary_type.cpp
+				$(TOSO) libboundary_type.so boundary_type.o
+				@mv ./boundary_type.o $(BUILD_DIR)
+				@mv ./libboundary_type.so $(BUILD_DIR)
+
+try: string_operator boundary_type gmFoamTranslator mesh_conversion
+	$(TOOUT) try.cpp -o try -L$(BUILD_DIR)  -lgmFoamTranslator -lboundary_type -lstring_operator -Wl,-rpath=$(BUILD_DIR)
 	@mv ./try $(BUILD_DIR)
 	@sudo ln -sf $(BUILD_DIR)/try /usr/local/bin 
 

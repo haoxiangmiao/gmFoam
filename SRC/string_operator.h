@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-02-04 20:28:06                                     *            
+*                           Last Modified time: 2017-03-04 19:39:52                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -39,7 +39,7 @@ class string_operator
 		void set_string(string& str);
 		string balanced_extractor(string& s1, string& opening_flag, string& closing_flag);    //s1 is the beginning string before opening_flag
 		void balanced_replace(string& insert_str, string& s1, string& opening_flag, string& closing_flag);   //s1 is the beginning string before opening_flag
-
+		std::vector<string> string_separator(string& s1, string separator);
 	private:
 		string s;
 
