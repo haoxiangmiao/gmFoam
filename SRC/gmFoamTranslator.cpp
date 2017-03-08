@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-05 00:18:25                                     *            
+*                           Last Modified time: 2017-03-08 00:53:44                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -96,6 +96,9 @@ void gmFoamTranslator::set_funcMap()
 	this->funcMap["define_boundaryGeometry"]=&gmFoamTranslator::define_boundaryGeometry;
 	this->funcMap["set_system"]=&gmFoamTranslator::set_system;
 	this->funcMap["set_boundary_condition"]=&gmFoamTranslator::set_boundary_condition;
+	this->funcMap["add_fluid_volume"]=&gmFoamTranslator::add_fluid_volume;
+	this->funcMap["define_model_name"]=&gmFoamTranslator::define_model_name;
+
 }
 // ##################################################################################################################################################### 
 
@@ -116,17 +119,18 @@ std::map<std::string,  void (gmFoamTranslator::* )()> gmFoamTranslator::get_map(
 void gmFoamTranslator::load_mesh()
 {
 	extern string project_name;
-	string temp_str=(this->parameter)[0];            //note the calling of components here, first () then []
-	string_operator so=string_operator((this->parameter)[0]);
-	string::iterator it=temp_str.begin();
-	for(; it!=temp_str.end(); ++it)
-	{
-		if(so.get_string_component(it)!=".")
-			project_name=project_name+so.get_string_component(it);
-		else break;
-	}
+	string s=project_name;
+	// string temp_str=(this->parameter)[0];            //note the calling of components here, first () then []
+	// string_operator so=string_operator((this->parameter)[0]);
+	// string::iterator it=temp_str.begin();
+	// for(; it!=temp_str.end(); ++it)
+	// {
+	// 	if(so.get_string_component(it)!=".")
+	// 		project_name=project_name+so.get_string_component(it);
+	// 	else break;
+	// }
 	string SPACE=" ";
-	string bash_call_string="gmsh_conversion"+SPACE+project_name;
+	string bash_call_string="gmsh_conversion"+SPACE+s;
 	system(bash_call_string.c_str());
 }
 
@@ -373,6 +377,227 @@ void gmFoamTranslator::set_boundary_condition()
 
 
 }
+
+void gmFoamTranslator::define_model_name()
+{
+	extern string project_name;
+	project_name=(this->parameter)[0];
+}
+
+
+void gmFoamTranslator::add_fluid_volume()
+{
+	string Dir=getFilePath();
+	Dir=Dir+"/"+(this->parameter)[0];
+
+	extern string project_name;
+	string s= project_name;
+
+	ifstream mesh_file(Dir);
+	string current_line;
+	string output_string="";
+
+	string_operator so1=string_operator((this->parameter)[1]);
+	string_operator so2=string_operator((this->parameter)[2]);
+	string separator1=";";
+	
+
+	std::vector<string> physical_volume=so1.string_separator((this->parameter)[1],separator1);
+	std::vector<string> physical_boundary=so2.string_separator((this->parameter)[2],separator1);
+
+
+	// ##########################try to concatenate two string vector#################################################
+	std::vector<string> physical_element=physical_boundary;
+	physical_element.insert(physical_element.end(),physical_volume.begin(),physical_volume.end());
+
+	// ##################################end concatenating#############################################################
+	std::map<int, std::vector<string>> NODE;
+	std::map<int, std::vector<string>> ELEMENT;
+
+	if(mesh_file.is_open())
+	{
+		int flag=0;
+		int index=-1;
+		
+		while(std::getline(mesh_file,current_line))
+		{
+
+			if(current_line=="$MeshFormat")
+			{
+				flag=1;
+			}
+			if(current_line=="$Nodes")
+			{
+				flag=2;
+				index=0;
+			}
+			if(current_line=="$Elements")
+			{
+				flag=3;
+				index=0;
+			}
+			if(current_line=="$PhysicalNames")
+			{
+				flag=4;
+				index=0;
+			}
+			if(flag==1)
+			{
+					if(current_line!="$PhysicalNames")
+					{
+						output_string=output_string+current_line+"\n";
+					}
+					else
+					{
+						flag=0;
+					}
+				// cout<<current_line;
+			}
+			if(flag==2)
+			{
+				if(index!= 2)
+				{
+					index=index+1;   //just to skip fisrt two lines
+				}
+				else
+				{
+					if(current_line!="$EndNodes")
+					{
+						string_operator so=string_operator(current_line);
+						string separator=" ";
+						std::vector<string> string_component=so.string_separator(current_line,separator);   //parse nodes information: 4 numbers: 1 index 3 coordinates
+						int node_index=std::stoi(string_component[0]);
+						NODE[node_index]=string_component;
+						// cout<<NODE[1][2]<<endl;
+						// flag=3;
+					}
+					else
+					{
+						flag=0;
+						index=-1;
+					}					
+				
+				}
+			}
+			if(flag==3)
+			{
+				if(index!=2)
+				{
+					index=index+1;
+				}
+				else
+				{
+					if(current_line!="$EndElements")
+					{
+						string_operator so=string_operator(current_line);
+						string separator=" ";
+						std::vector<string> string_component=so.string_separator(current_line,separator);
+						int element_index=std::stoi(string_component[0]);
+						ELEMENT[element_index]=string_component;
+					}
+					else
+					{
+						flag=0;
+						index=-1;
+					}
+				}
+			}
+			if(flag==4)
+			{
+				if(index!=2)
+				{
+					index=index+1;
+				}
+				else
+				{
+					if(current_line!="$EndPhysicalNames")
+					{
+						string_operator so=string_operator(current_line);
+						string separator=" ";
+						std::vector<string> string_component=so.string_separator(current_line,separator);
+						for (int i3 = 0; i3 < physical_element.size(); ++i3)
+						{
+							if(string_component[1]==physical_element[i3])
+							{
+								output_string=output_string+current_line+"\n";
+							}
+						}
+					}
+					else
+					{
+						flag=0;
+						index=-1;
+					}
+				}
+			}
+
+		}
+
+	}
+	else
+	{
+		cout<<"Cannot open file"<<endl;
+	}
+
+	int No_nodes=0;
+	int No_elements=0;
+	int No_physical_surfaces=0;
+	std::vector<int> nodelist;
+	string element_information="";
+	string node_information="";
+
+
+
+	for(int i=0; i<physical_element.size(); ++i)
+	{
+		for(int j=0; j<ELEMENT.size(); ++j)
+		{
+			if(ELEMENT[j][3]==physical_element[i])
+			{
+				for (int k = 0; k < (ELEMENT[j]).size(); ++j)
+				{
+					element_information=element_information+ELEMENT[j][k]+" ";
+				}
+				element_information=element_information+"\n";
+				No_elements=No_elements+1;
+				for(int l=5; l < (ELEMENT[j]).size()-5; ++l)
+				{
+					int temp=std::stoi(ELEMENT[j][l]);
+					nodelist.push_back(temp);
+				}	
+			}
+		}
+	}
+	sort(nodelist.begin(),nodelist.end());
+	nodelist.erase(unique(nodelist.begin(),nodelist.end()),nodelist.end());
+	for (int i1 = 0; i1 < nodelist.size(); ++i1)
+	{
+		for(int j1=0; j1 <NODE.size(); ++j1)
+		{
+			if(nodelist[i1]==std::stoi(NODE[j1][0]))
+			{
+				for(int k1=0; k1<(NODE[j1]).size(); ++k1)
+				{
+					node_information=node_information+NODE[j1][k1]+" ";
+				}
+				node_information=node_information+"\n";
+				No_nodes=No_nodes+1;
+			}
+		}
+	}
+
+
+
+
+	output_string=output_string+"\n$EndPhysicalNames\n$Nodes\n"+std::to_string(No_nodes)+"\n"+node_information+"\n$EndNodes\n$Elements\n"+std::to_string(No_elements)+"\n"+element_information+"\n$EndElements\n";
+
+	string output_dir=getFilePath()+"/"+project_name+".fmsh";
+	std::ofstream out(output_dir);
+	out<<output_string;
+	out.close();
+
+}
+
 
 
 

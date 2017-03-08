@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-04 20:32:03                                     *            
+*                           Last Modified time: 2017-03-08 00:50:31                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -58,7 +58,8 @@ class gmFoamTranslator{
 		void set_system();
 		void set_boundary_condition();
 		string getFilePath();
-		
+		void add_fluid_volume();
+		void define_model_name();
 
 
 	private:

@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-04 23:13:12                                     *            
+*                           Last Modified time: 2017-03-07 20:38:17                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -67,7 +67,7 @@ vector<string> string_operator::string_extractor(string& s1, string opening_flag
 	return ret;
 }
 
-std::vector<string> string_operator::string_separator(string& s1, string separator)
+std::vector<string> string_operator::string_separator(string& s1, string separator)   
 {
 	vector<string> ret;
 	string temp_string="";
@@ -79,11 +79,14 @@ std::vector<string> string_operator::string_separator(string& s1, string separat
 			temp_string=temp_string+get_string_component(it);
 			it=it+1;
 		}
+
 		ret.push_back(temp_string);
 		temp_string="";
 	}
 	return ret;	
 }
+
+
 
 string string_operator::delete_space(string& s2)
 {
@@ -104,7 +107,8 @@ string string_operator::get_string_component(string::iterator it)
 	string ret;
 	stringstream ss;
 	ss<<(*it);
-	ss>>ret;
+	// ss>>ret;     //Attention: if use this way to transfer stringstream to string, it cannot handle whitespace;
+	ret=ss.str();
 	return ret;
 }
 
