@@ -1,3 +1,19 @@
+/********************************************************************************************************
+* File:              boundary_type.cpp                                              
+* Author:            hexiang6666                                 | Boris Jeremic,                       *
+* Date:              2017-03-10 01:32:47                         | University of California, Davis,95616*
+* Description:       #############                               | California                           *
+* Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
+* Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
+*                           Last Modified time: 2017-03-10 01:35:03                                     *            
+*  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
+* The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
+* The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
+* with the terms and conditions stipulated in the agreement/contract under which the program have been  *
+* supplied.                                                                                             *
+*********************************************************************************************************/
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,6 +27,9 @@ using namespace std;
 boundary_type::boundary_type(){}
 boundary_type::~boundary_type(){}
 boundary_type::boundary_type(const string& str):s{str}{}
+
+
+//##########################Note:: This function handles all knids of Bundary condition output; should be updated if using new boundary conditions ########################################
 
 string boundary_type::generateBC()
 {
@@ -61,9 +80,23 @@ string boundary_type::generateBC()
 			ret=vs[0]+";\n";
 		}
 	}
+	if(vs[0]=="zeroGradient")
+	{
+		if(vs.size()!=1)
+		{
+			cout<<"syntax error"<<endl;
+		}
+		else
+		{
+			ret=vs[0]+";\n";
+		}
+	}
 
 	return ret;
 }
+
+
+// ###############################################################################################################################################################################
 
 
 string boundary_type::get_string()

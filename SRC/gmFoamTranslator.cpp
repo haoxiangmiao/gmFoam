@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-08 00:53:44                                     *            
+*                           Last Modified time: 2017-03-10 01:23:50                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -91,13 +91,14 @@ vector<string> gmFoamTranslator::get_parameter()
 
 void gmFoamTranslator::set_funcMap()
 {
-	this->funcMap["load_mesh"]=&gmFoamTranslator::load_mesh;
+	this->funcMap["load_fluid_mesh"]=&gmFoamTranslator::load_fluid_mesh;
 	this->funcMap["define_transportProperties"]=&gmFoamTranslator::define_transportProperties;
 	this->funcMap["define_boundaryGeometry"]=&gmFoamTranslator::define_boundaryGeometry;
 	this->funcMap["set_system"]=&gmFoamTranslator::set_system;
 	this->funcMap["set_boundary_condition"]=&gmFoamTranslator::set_boundary_condition;
-	this->funcMap["add_fluid_volume"]=&gmFoamTranslator::add_fluid_volume;
+	this->funcMap["add_fluid_phase"]=&gmFoamTranslator::add_fluid_phase;
 	this->funcMap["define_model_name"]=&gmFoamTranslator::define_model_name;
+	this->funcMap["add_solid_phase"]=&gmFoamTranslator::add_solid_phase;
 
 }
 // ##################################################################################################################################################### 
@@ -116,10 +117,13 @@ std::map<std::string,  void (gmFoamTranslator::* )()> gmFoamTranslator::get_map(
 	return this->funcMap;
 }
 
-void gmFoamTranslator::load_mesh()
+void gmFoamTranslator::load_fluid_mesh()
 {
+	int FLAG=-1;
+
 	extern string project_name;
 	string s=project_name;
+	s=s+"_fluid";
 	// string temp_str=(this->parameter)[0];            //note the calling of components here, first () then []
 	// string_operator so=string_operator((this->parameter)[0]);
 	// string::iterator it=temp_str.begin();
@@ -132,17 +136,28 @@ void gmFoamTranslator::load_mesh()
 	string SPACE=" ";
 	string bash_call_string="gmsh_conversion"+SPACE+s;
 	system(bash_call_string.c_str());
+
+
+
+	FLAG=0;
+	bug_information(FLAG);
 }
 
 void gmFoamTranslator::define_transportProperties()   
 {
+	int FLAG=-1;
+
 	extern string project_name;
-	string s= project_name;
+	string s= project_name+"_fluid";
 	string Dir=getFilePath();
 	Dir=Dir+"/"+s+"/constant/transportProperties";
 	std::ifstream input(Dir);
 	if (!input) 
+	{
 		std::cerr << "Could not open the file!" << std::endl;
+		bug_information(FLAG);
+		return;
+	}
 	else
 	{
 		string temp_s;
@@ -151,13 +166,27 @@ void gmFoamTranslator::define_transportProperties()
 		input.seekg(0, std::ios::beg);
 		temp_s.assign((std::istreambuf_iterator<char>(input)),std::istreambuf_iterator<char>());
 		if((this->parameter).size()!=3)
+		{
 			std::cerr << "lack parameters in define_transportProperties" << std::endl;
+			bug_information(FLAG);
+			return;
+		}
 		else
 		{
 			string unit="";
 			string continuous_unit=(this->parameter)[1];
 			for(string::iterator it=continuous_unit.begin(); it<continuous_unit.end(); ++it)
-				unit=unit+(*it)+" ";
+			{
+				// unit=unit+(*it)+" ";
+				if((*it)!='-')                     //in order to avoid separation between negative sign and numbers
+				{
+					unit=unit+(*it)+" ";
+				}
+				else
+				{
+					unit=unit+(*it);
+				}
+			}
 			temp_s=temp_s+(this->parameter)[0]+"      ["+unit+"] "+(this->parameter)[2]+";\n";
 			std::ofstream out(Dir);
 			out<<temp_s;
@@ -165,17 +194,28 @@ void gmFoamTranslator::define_transportProperties()
 		}
 	
 	};
+
+
+
+	FLAG=0;
+	bug_information(FLAG);
 }
 
 void gmFoamTranslator::define_boundaryGeometry()
 {
+	int FLAG=-1;
+
 	extern string project_name;
-	string s= project_name;
+	string s= project_name+"_fluid";
 	string Dir=getFilePath();
 	Dir=Dir+"/"+s+"/constant/polyMesh/boundary";
 	std::ifstream input(Dir);
-	if (!input) 
+	if (!input)
+	{
 		std::cerr << "Could not open the file!" << std::endl;
+		bug_information(FLAG);
+		return;
+	}
 	else
 	{
 		string temp_s;
@@ -199,6 +239,11 @@ void gmFoamTranslator::define_boundaryGeometry()
 		out<<temp_s;
 		out.close();
 	};
+
+
+
+	FLAG=0;
+	bug_information(FLAG);
 }
 
 void gmFoamTranslator::execute_command()
@@ -209,21 +254,28 @@ void gmFoamTranslator::execute_command()
 // ###########this function can be used to return current running directory as string#######################
 string gmFoamTranslator::getFilePath()
 {
+
 	char filePath[256];	
 	if(!GetCurrentDir(filePath, sizeof(filePath)))
 	{
 
 		cout<<"** ERROR - Something went wrong, exiting...\n";
+		return " ";
 	}
 	
 	string FilePath(filePath);
 	return FilePath;
+
 }
 
 void gmFoamTranslator::set_system()
 {
+	
+	int FLAG=-1;
+
+
 	extern string project_name;
-	string s= project_name;
+	string s= project_name+"_fluid";
 	string Dir=getFilePath();
 	Dir=Dir+"/"+s+"/"+"system/"+(this->parameter)[0];
 	string_operator so;
@@ -261,13 +313,20 @@ void gmFoamTranslator::set_system()
 	out<<new_string;
 	out.close();
 
+
+
+	FLAG=0;
+	bug_information(FLAG);
+
 }
 
 
 void gmFoamTranslator::set_boundary_condition()
 {
+	int FLAG=-1;
+
 	extern string project_name;
-	string s= project_name;
+	string s= project_name+"_fluid";
 	string Dir=getFilePath();
 
 	// First we need to get startTime
@@ -330,6 +389,8 @@ void gmFoamTranslator::set_boundary_condition()
 		else
 		{
 			cout<<"please specify the dimensions for boundary condition field "<<(this->parameter)[0]<<endl;
+			bug_information(FLAG);
+			return;
 		}
 	}
 
@@ -376,17 +437,35 @@ void gmFoamTranslator::set_boundary_condition()
 	};
 
 
+
+
+	FLAG=0;
+	bug_information(FLAG);
 }
+
+
+
 
 void gmFoamTranslator::define_model_name()
 {
+	int FLAG=-1;
+
+
 	extern string project_name;
 	project_name=(this->parameter)[0];
+
+
+	FLAG=0;
+	bug_information(FLAG);
 }
 
 
-void gmFoamTranslator::add_fluid_volume()
+void gmFoamTranslator::add_fluid_phase()
 {
+	int FLAG=-1;
+
+
+
 	string Dir=getFilePath();
 	Dir=Dir+"/"+(this->parameter)[0];
 
@@ -403,16 +482,18 @@ void gmFoamTranslator::add_fluid_volume()
 	
 
 	std::vector<string> physical_volume=so1.string_separator((this->parameter)[1],separator1);
-	std::vector<string> physical_boundary=so2.string_separator((this->parameter)[2],separator1);
 
+	std::vector<string> physical_boundary=so2.string_separator((this->parameter)[2],separator1);
 
 	// ##########################try to concatenate two string vector#################################################
 	std::vector<string> physical_element=physical_boundary;
 	physical_element.insert(physical_element.end(),physical_volume.begin(),physical_volume.end());
 
+	// cout<<physical_element[5]<<physical_element[6]<<physical_element[7]<<endl;
+
 	// ##################################end concatenating#############################################################
-	std::map<int, std::vector<string>> NODE;
-	std::map<int, std::vector<string>> ELEMENT;
+	std::map<int, std::vector<string>> NODE;		//node map: the first component is node index; the second component is whole node line.
+	std::map<int, std::vector<string>> ELEMENT;   //element map: the firsr component is element index, the second component is whole element line .msh file.
 
 	if(mesh_file.is_open())
 	{
@@ -440,16 +521,19 @@ void gmFoamTranslator::add_fluid_volume()
 			{
 				flag=4;
 				index=0;
+				output_string=output_string+"$PhysicalNames\n"+std::to_string(physical_element.size())+"\n";
 			}
 			if(flag==1)
 			{
 					if(current_line!="$PhysicalNames")
 					{
 						output_string=output_string+current_line+"\n";
+						// cout<<"I am here"<<endl;
 					}
 					else
 					{
 						flag=0;
+						// cout<<output_string<<endl;
 					}
 				// cout<<current_line;
 			}
@@ -468,8 +552,7 @@ void gmFoamTranslator::add_fluid_volume()
 						std::vector<string> string_component=so.string_separator(current_line,separator);   //parse nodes information: 4 numbers: 1 index 3 coordinates
 						int node_index=std::stoi(string_component[0]);
 						NODE[node_index]=string_component;
-						// cout<<NODE[1][2]<<endl;
-						// flag=3;
+
 					}
 					else
 					{
@@ -494,6 +577,7 @@ void gmFoamTranslator::add_fluid_volume()
 						std::vector<string> string_component=so.string_separator(current_line,separator);
 						int element_index=std::stoi(string_component[0]);
 						ELEMENT[element_index]=string_component;
+						// cout<<ELEMENT[element_index][2]<<endl;
 					}
 					else
 					{
@@ -520,6 +604,7 @@ void gmFoamTranslator::add_fluid_volume()
 							if(string_component[1]==physical_element[i3])
 							{
 								output_string=output_string+current_line+"\n";
+								// cout<<output_string<<endl;
 							}
 						}
 					}
@@ -537,6 +622,7 @@ void gmFoamTranslator::add_fluid_volume()
 	else
 	{
 		cout<<"Cannot open file"<<endl;
+		return;
 	}
 
 	int No_nodes=0;
@@ -550,35 +636,53 @@ void gmFoamTranslator::add_fluid_volume()
 
 	for(int i=0; i<physical_element.size(); ++i)
 	{
-		for(int j=0; j<ELEMENT.size(); ++j)
+		for(std::map<int, std::vector<string>>::iterator it=ELEMENT.begin(); it!=ELEMENT.end(); ++it)
 		{
-			if(ELEMENT[j][3]==physical_element[i])
+			if((it->second)[3]==physical_element[i])   //the 4th component is physical group number
 			{
-				for (int k = 0; k < (ELEMENT[j]).size(); ++j)
+				for (int k = 0; k < (it->second).size(); ++k)
 				{
-					element_information=element_information+ELEMENT[j][k]+" ";
+					element_information=element_information+(it->second)[k]+" ";
 				}
 				element_information=element_information+"\n";
+
+				// cout<<element_information<<endl;
+
 				No_elements=No_elements+1;
-				for(int l=5; l < (ELEMENT[j]).size()-5; ++l)
+				for(int l=5; l < (it->second).size(); ++l)
 				{
-					int temp=std::stoi(ELEMENT[j][l]);
+					int temp=std::stoi((it->second)[l]);
 					nodelist.push_back(temp);
 				}	
 			}
 		}
 	}
+
+
 	sort(nodelist.begin(),nodelist.end());
 	nodelist.erase(unique(nodelist.begin(),nodelist.end()),nodelist.end());
+
+	// for(std::vector<int>::iterator it2=nodelist.begin(); it2!=nodelist.end(); ++it2)
+	// {
+	// 	cout<<(*it2)<<endl;
+	// 	cout<<"i AM HAPPY DOWN"<<endl;
+	// }
+
+	// for(std::map<int, std::vector<string>>::iterator it3=NODE.begin(); it3!=NODE.end(); ++it3)
+	// {
+	// 	cout<<(it3->first)<<endl;
+	// 	cout<<"finish output node information"<<endl;
+	// }
+
 	for (int i1 = 0; i1 < nodelist.size(); ++i1)
 	{
-		for(int j1=0; j1 <NODE.size(); ++j1)
+		for(std::map<int, std::vector<string>>::iterator it1=NODE.begin(); it1!=NODE.end(); ++it1)
 		{
-			if(nodelist[i1]==std::stoi(NODE[j1][0]))
+			if(nodelist[i1]==std::stoi((it1->second)[0]))
 			{
-				for(int k1=0; k1<(NODE[j1]).size(); ++k1)
+				for(int k1=0; k1<(it1->second).size(); ++k1)
 				{
-					node_information=node_information+NODE[j1][k1]+" ";
+					node_information=node_information+(it1->second)[k1]+" ";
 				}
 				node_information=node_information+"\n";
 				No_nodes=No_nodes+1;
@@ -587,19 +691,65 @@ void gmFoamTranslator::add_fluid_volume()
 	}
 
 
+	output_string=output_string+"$EndPhysicalNames\n$Nodes\n"+std::to_string(No_nodes)+"\n"+node_information+"$EndNodes\n$Elements\n"+std::to_string(No_elements)+"\n"+element_information+"$EndElements\n";
+
+	string file_dir=getFilePath()+"/"+s+"_fluid";
+	struct stat st;
+	if(stat(file_dir.c_str(),&st)!=0)
+	{
+		// cout<<"directory does not exist"<<endl;
+		string mk_str="mkdir  "+file_dir;
+		system(mk_str.c_str());
+	}
+	else
+	{
+		// ########################## terminal commands can be executed inside c++ using system function ############################################ 
+		cout<<s<<"_fluid already exists!!! clearing inside..."<<endl;
+		string rm_str="rm -r "+file_dir;
+		string mk_str="mkdir  "+file_dir;
+		system(rm_str.c_str());
+		system(mk_str.c_str());
+		// ###########################################################################################################################################
+	}
 
 
-	output_string=output_string+"\n$EndPhysicalNames\n$Nodes\n"+std::to_string(No_nodes)+"\n"+node_information+"\n$EndNodes\n$Elements\n"+std::to_string(No_elements)+"\n"+element_information+"\n$EndElements\n";
 
-	string output_dir=getFilePath()+"/"+project_name+".fmsh";
+	string output_dir=file_dir+"/"+project_name+"_fluid.msh";
 	std::ofstream out(output_dir);
 	out<<output_string;
 	out.close();
 
+	
+
+	FLAG=0;
+	bug_information(FLAG);
+
+}
+
+void gmFoamTranslator::add_solid_phase()
+{
+	int FLAG=-1;
+
+
+	string calling_gmessy="gmessy "+(this->parameter)[0];
+	system(calling_gmessy.c_str());
+
+
+	FLAG=0;
+	bug_information(FLAG);
 }
 
 
-
-
-
+void gmFoamTranslator::bug_information(int FLAG)
+{
+	if(FLAG==0)
+	{
+		cout<<"Successfully converted "<<(this->input_string)<<"\n"<<endl;
+	}
+	else
+	{
+		cout<<"ATTENTION:Failed to converted "<<(this->input_string)<<"!!!"<<"\n"<<endl;
+	}
+	
+}
 //###########################################################################################################

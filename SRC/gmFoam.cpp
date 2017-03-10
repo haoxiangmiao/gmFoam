@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-02-04 20:27:50                                     *            
+*                           Last Modified time: 2017-03-10 02:05:23                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -19,6 +19,7 @@
 #include <streambuf>
 #include <functional>
 #include <map>
+#include "gmFoamTranslator.h"
 
 
 using namespace std;
@@ -40,17 +41,21 @@ int main(int argc, char const *argv[])
 		t.seekg(0, std::ios::beg);
 		file_str.assign((std::istreambuf_iterator<char>(t)),std::istreambuf_iterator<char>());
 		// ###################################end of reading file################################
-    	std::regex e ("<[A-Za-z0-9_\"\\.\\s]+>[\\s]*(\\[[A-Za-z0-9_\"\\.\\s]+\\][\\s]*\\{[A-Za-z0-9_\"\\.\\s]+\\})*");
+    	// std::regex e ("<[A-Za-z0-9_\"\\.\\s]+>[\\s]*(\\[[A-Za-z0-9_\"\\.\\s]+\\])*[\\s]*(\\{[A-Za-z0-9_\"\\.\\s]+\\})*");
+    	std::regex e ("<[A-Za-z0-9_\"\\.\\s]+>(([\\s]*)|((\\[[A-Za-z0-9_\"\\.\\s]+\\])*)|((\\{[A-Za-z0-9_\"\\.\\s]+\\})*))");
+
 	  	std::regex_iterator<std::string::iterator> rit ( file_str.begin(), file_str.end(), e );
     	std::regex_iterator<std::string::iterator> rend;
-   		// while (rit!=rend)
-    	// {
-    		input_string=rit->str();
+   		while (rit != rend)
+    	{
+    		string input_string=rit->str();
+    		cout<<input_string<<endl;
+    		gmFoamTranslator tr=gmFoamTranslator(input_string);
+    		tr.set_all();
+    		tr.execute_command();
 
-
-    		// std::cout << rit->str() << std::endl;
-   			// ++rit;
-   		// }
+    		++rit;
+   		}
 	}
 	if (argc>2)
 	{

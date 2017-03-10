@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-08 00:50:31                                     *            
+*                           Last Modified time: 2017-03-10 00:22:52                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -51,15 +51,17 @@ class gmFoamTranslator{
 		vector<string> get_keyword();
 		vector<string> get_parameter();
 		std::map<std::string, void (gmFoamTranslator::* )()> get_map();
-		void load_mesh();
+		void load_fluid_mesh();
 		void define_transportProperties();
 		void define_boundaryGeometry();
 		void execute_command();
 		void set_system();
 		void set_boundary_condition();
 		string getFilePath();
-		void add_fluid_volume();
+		void add_fluid_phase();
 		void define_model_name();
+		void add_solid_phase();
+		void bug_information(int FLAG);
 
 
 	private:

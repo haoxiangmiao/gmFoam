@@ -6,7 +6,7 @@
 # Rev:               Version 1                                   | jeremic@ucdavis.edu                  #
 # Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     #
 # * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  # 
-#                           Last Modified time: 2017-02-04 21:16:54                                     #              
+#                           Last Modified time: 2017-03-10 01:51:22                                     #              
 #  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #         
 # The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     #
 # The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance# 
@@ -38,14 +38,20 @@ boundary_type: boundary_type.cpp
 				@mv ./boundary_type.o $(BUILD_DIR)
 				@mv ./libboundary_type.so $(BUILD_DIR)
 
-try: string_operator boundary_type gmFoamTranslator mesh_conversion
-	$(TOOUT) try.cpp -o try -L$(BUILD_DIR)  -lgmFoamTranslator -lboundary_type -lstring_operator -Wl,-rpath=$(BUILD_DIR)
-	@mv ./try $(BUILD_DIR)
-	@sudo ln -sf $(BUILD_DIR)/try /usr/local/bin 
+# try: string_operator boundary_type gmFoamTranslator mesh_conversion
+# 	$(TOOUT) try.cpp -o try -L$(BUILD_DIR)  -lgmFoamTranslator -lboundary_type -lstring_operator -Wl,-rpath=$(BUILD_DIR)
+# 	@mv ./try $(BUILD_DIR)
+# 	@sudo ln -sf $(BUILD_DIR)/try /usr/local/bin 
+
+gmFoam: string_operator boundary_type gmFoamTranslator mesh_conversion
+		$(TOOUT) gmFoam.cpp -o gmFoam -L$(BUILD_DIR)  -lgmFoamTranslator -lboundary_type -lstring_operator -Wl,-rpath=$(BUILD_DIR)
+		@mv ./gmFoam $(BUILD_DIR)
+		@sudo ln -sf $(BUILD_DIR)/gmFoam /usr/local/bin 
 
 clean: 
 	@cd $(BUILD_DIR); rm -r $(BUILD_DIR)
-rebuild: clean try
+
+rebuild: clean gmFoam
 
 mesh_conversion: $(SOURCE_DIR)/gmsh_conversion_reserved
 	@if [ -f "./gmsh_conversion" ]; then rm ./gmsh_conversion; fi

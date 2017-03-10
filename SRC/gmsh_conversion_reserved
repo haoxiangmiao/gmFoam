@@ -1,12 +1,12 @@
 #*******************************************************************************************************#
-# File:              gmsh_conversion_reserved                                              
+# File:              ShellScript.tmpl                                              
 # Author:            hexiang6666                                 | Boris Jeremic,                       #
-# Date:              2017-02-23 13:12:40                         | University of California, Davis,95616#
+# Date:              2017-03-09 23:49:45                         | University of California, Davis,95616#
 # Description:       #############                               | California                           #
 # Rev:               Version 1                                   | jeremic@ucdavis.edu                  #
 # Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     #
 # * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  # 
-#                           Last Modified time: 2017-02-04 21:16:54                                     #              
+#                           Last Modified time: 2017-03-09 23:50:06                                     #              
 #  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #         
 # The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     #
 # The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance# 
@@ -14,13 +14,13 @@
 # supplied.                                                                                             #
 #*******************************************************************************************************#
 export CURRENT_DIR=$PWD
-if [ -d "./$1" ]
-then
-	rm -r ./$1
-fi
+# if [ -d "./$1" ]
+# then
+# 	rm -r ./$1
+# fi
 
-mkdir ./$1
+# cd ./$1
 
 cp -r $SOURCE_DIR/input_template/* $CURRENT_DIR/$1
 source /home/hexiang/OpenFOAM/OpenFOAM-v1612+/etc/bashrc
-gmshToFoam *.msh -case $1
+gmshToFoam ./$1/*.msh -case $1
