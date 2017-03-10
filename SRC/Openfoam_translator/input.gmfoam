@@ -10,7 +10,7 @@
 <define_transportProperties> [property_name]{nu}[property_dimensions]{0 2 -1 0 0 0 0}[property_value]{0.01}
 
 
-<define_boundaryGeometry> [top_fluid_surface]{wall}[bottom_fluid_surface]{wall}[lateral_surface_4]{wall}[lateral_surface_3]{wall}[lateral_surface_2]{wall}[lateral_surface_1]{wall}
+<define_boundaryGeometry>[top_fluid_surface]{wall}[bottom_fluid_surface]{wall}[lateral_surface_4]{wall}[lateral_surface_3]{wall}[lateral_surface_2]{wall}[lateral_surface_1]{wall}
 
 
 <set_boundary_condition>[boundary_file]{U}[variable]{dimensions}[value]{0 1 -1 0 0 0 0}

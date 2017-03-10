@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-10 01:23:50                                     *            
+*                           Last Modified time: 2017-03-10 12:33:20                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -123,7 +123,7 @@ void gmFoamTranslator::load_fluid_mesh()
 
 	extern string project_name;
 	string s=project_name;
-	s=s+"_fluid";
+	s=s+"_fluid_simulation";
 	// string temp_str=(this->parameter)[0];            //note the calling of components here, first () then []
 	// string_operator so=string_operator((this->parameter)[0]);
 	// string::iterator it=temp_str.begin();
@@ -136,9 +136,7 @@ void gmFoamTranslator::load_fluid_mesh()
 	string SPACE=" ";
 	string bash_call_string="gmsh_conversion"+SPACE+s;
 	system(bash_call_string.c_str());
-
-
-
+	
 	FLAG=0;
 	bug_information(FLAG);
 }
@@ -148,7 +146,7 @@ void gmFoamTranslator::define_transportProperties()
 	int FLAG=-1;
 
 	extern string project_name;
-	string s= project_name+"_fluid";
+	string s= project_name+"_fluid_simulation";
 	string Dir=getFilePath();
 	Dir=Dir+"/"+s+"/constant/transportProperties";
 	std::ifstream input(Dir);
@@ -206,7 +204,7 @@ void gmFoamTranslator::define_boundaryGeometry()
 	int FLAG=-1;
 
 	extern string project_name;
-	string s= project_name+"_fluid";
+	string s= project_name+"_fluid_simulation";
 	string Dir=getFilePath();
 	Dir=Dir+"/"+s+"/constant/polyMesh/boundary";
 	std::ifstream input(Dir);
@@ -275,7 +273,7 @@ void gmFoamTranslator::set_system()
 
 
 	extern string project_name;
-	string s= project_name+"_fluid";
+	string s= project_name+"_fluid_simulation";
 	string Dir=getFilePath();
 	Dir=Dir+"/"+s+"/"+"system/"+(this->parameter)[0];
 	string_operator so;
@@ -326,7 +324,7 @@ void gmFoamTranslator::set_boundary_condition()
 	int FLAG=-1;
 
 	extern string project_name;
-	string s= project_name+"_fluid";
+	string s= project_name+"_fluid_simulation";
 	string Dir=getFilePath();
 
 	// First we need to get startTime
@@ -693,7 +691,7 @@ void gmFoamTranslator::add_fluid_phase()
 
 	output_string=output_string+"$EndPhysicalNames\n$Nodes\n"+std::to_string(No_nodes)+"\n"+node_information+"$EndNodes\n$Elements\n"+std::to_string(No_elements)+"\n"+element_information+"$EndElements\n";
 
-	string file_dir=getFilePath()+"/"+s+"_fluid";
+	string file_dir=getFilePath()+"/"+s+"_fluid_simulation";
 	struct stat st;
 	if(stat(file_dir.c_str(),&st)!=0)
 	{
