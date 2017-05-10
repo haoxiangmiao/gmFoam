@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-10 01:28:01                                     *            
+*                           Last Modified time: 2017-03-29 22:21:31                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -53,7 +53,6 @@ int main(int argc, char const *argv[])
 	gmFoamTranslator tr4=gmFoamTranslator(s4);
 	tr4.set_all();
 	tr4.execute_command();
-
 
 
 	string s5="<define_boundaryGeometry> [top_fluid_surface]{wall}[bottom_fluid_surface]{wall}[lateral_surface_4]{wall}[lateral_surface_3]{wall}[lateral_surface_2]{wall}[lateral_surface_1]{wall}";

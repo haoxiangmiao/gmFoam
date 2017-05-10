@@ -1,0 +1,102 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  plus                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p_rgh;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -1 -2 0 0 0 0 ];
+
+internalField   uniform 0 ;
+
+boundaryField
+{
+    water_top_surface
+    {
+        type            totalPressure;
+        p0           uniform 0 ;
+
+    }
+
+
+    seabed_topleft_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    seabed_topright_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    breakwater_top_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    breakwater_left_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    breakwater_right_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    water_front_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    water_back_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    water_left_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+
+    water_right_surface
+    {
+        type            fixedFluxPressure;
+        value           uniform 0 ;
+
+
+    }
+}

@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-10 01:35:03                                     *            
+*                           Last Modified time: 2017-04-18 00:01:24                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -89,6 +89,75 @@ string boundary_type::generateBC()
 		else
 		{
 			ret=vs[0]+";\n";
+		}
+	}
+	if(vs[0]=="pressureInletOutletVelocity")
+	{
+		if(vs.size()!=3)
+		{
+			cout<<"syntax error"<<endl;
+		}
+		else
+		{
+			string vs12=vs[1]+";"+vs[2];
+			boundary_type bt=boundary_type(vs12);
+			string part_ret=bt.generateBC();
+
+			ret="pressureInletOutletVelocity;\n        value           "+part_ret;
+
+		}
+	}
+
+	if(vs[0]=="totalPressure")
+	{
+		if(vs.size()!=3)
+		{
+			cout<<"syntax error"<<endl;
+		}
+		else
+		{
+			string vs12=vs[1]+";"+vs[2];
+			boundary_type bt=boundary_type(vs12);
+			string part_ret=bt.generateBC();
+
+			ret="totalPressure;\n        p0           "+part_ret;
+		}
+	}
+
+	if(vs[0]=="fixedFluxPressure")
+	{
+		if(vs.size()!=3)
+		{
+			cout<<"syntax error"<<endl;
+		}
+		else
+		{
+			string vs12=vs[1]+";"+vs[2];
+			boundary_type bt=boundary_type(vs12);
+			string part_ret=bt.generateBC();
+
+			ret="fixedFluxPressure;\n        value           "+part_ret;
+
+		}
+	}
+
+	if(vs[0]=="inletOutlet")
+	{
+		if(vs.size()!=5)
+		{
+			cout<<"syntax error"<<endl;
+		}
+		else
+		{
+			string vs12=vs[1]+";"+vs[2];
+			string vs34=vs[3]+";"+vs[4];
+			boundary_type bt=boundary_type(vs12);
+			boundary_type bt1=boundary_type(vs34);
+			string part_ret=bt.generateBC();
+			string part_ret1=bt1.generateBC();
+
+			ret="inletOutlet;\n   inletValue           "+part_ret+"\t\tvalue           "+part_ret1;
+
 		}
 	}
 

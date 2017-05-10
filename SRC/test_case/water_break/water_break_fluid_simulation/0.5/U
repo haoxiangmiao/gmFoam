@@ -1,0 +1,84 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  plus                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 ) ;
+
+boundaryField
+{
+    water_top_surface
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform ( 0 0 0 ) ;
+
+    }
+
+
+    seabed_topleft_surface
+    {
+        type            noSlip;
+
+    }
+
+    seabed_topright_surface
+    {
+        type            noSlip;
+
+    }
+
+    breakwater_top_surface
+    {
+        type            noSlip;
+
+    }
+
+    breakwater_left_surface
+    {
+        type            noSlip;
+
+    }
+
+    breakwater_right_surface
+    {
+        type            noSlip;
+
+    }
+
+    water_front_surface
+    {
+        type            noSlip;
+
+    }
+
+    water_back_surface
+    {
+        type            noSlip;
+
+    }
+
+    water_left_surface
+    {
+        type            noSlip;
+
+    }
+
+    water_right_surface
+    {
+        type            noSlip;
+
+    }
+}

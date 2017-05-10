@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-10 12:33:20                                     *            
+*                           Last Modified time: 2017-04-18 01:06:48                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -163,16 +163,42 @@ void gmFoamTranslator::define_transportProperties()
 		temp_s.reserve(input.tellg()); 
 		input.seekg(0, std::ios::beg);
 		temp_s.assign((std::istreambuf_iterator<char>(input)),std::istreambuf_iterator<char>());
-		if((this->parameter).size()!=3)
+
+		// if((this->parameter).size()!=3)
+		// {
+		// 	std::cerr << "lack parameters in define_transportProperties" << std::endl;
+		// 	bug_information(FLAG);
+		// 	return;
+		// }
+		// else
+		// {
+		// 	string unit="";
+		// 	string continuous_unit=(this->parameter)[1];
+		// 	for(string::iterator it=continuous_unit.begin(); it<continuous_unit.end(); ++it)
+		// 	{
+		// 		// unit=unit+(*it)+" ";
+		// 		if((*it)!='-')                     //in order to avoid separation between negative sign and numbers
+		// 		{
+		// 			unit=unit+(*it)+" ";
+		// 		}
+		// 		else
+		// 		{
+		// 			unit=unit+(*it);
+		// 		}
+		// 	}
+		// 	temp_s=temp_s+(this->parameter)[0]+" s     ["+unit+"] "+(this->parameter)[2]+";\n";
+		// cout<<"keyword"<<(this->keyword)[0]<<endl;
+
+		if((this->keyword)[0]=="phase")
 		{
-			std::cerr << "lack parameters in define_transportProperties" << std::endl;
-			bug_information(FLAG);
-			return;
-		}
-		else
-		{
+			temp_s=temp_s+"\n"+(this->parameter)[0]+"\n"+"{\n";
+
+			temp_s=temp_s+"\t"+(this->keyword)[1]+"   "+(this->parameter)[1]+";\n";
+
 			string unit="";
-			string continuous_unit=(this->parameter)[1];
+
+			string continuous_unit=(this->parameter)[2];
+
 			for(string::iterator it=continuous_unit.begin(); it<continuous_unit.end(); ++it)
 			{
 				// unit=unit+(*it)+" ";
@@ -185,15 +211,54 @@ void gmFoamTranslator::define_transportProperties()
 					unit=unit+(*it);
 				}
 			}
-			temp_s=temp_s+(this->parameter)[0]+"      ["+unit+"] "+(this->parameter)[2]+";\n";
-			std::ofstream out(Dir);
-			out<<temp_s;
-			out.close();
+
+			temp_s=temp_s+"\t"+(this->keyword)[2]+"   ["+unit+"]   "+(this->parameter)[3]+";\n";
+
+			string unit_1="";
+
+			string continuous_unit_1=(this->parameter)[4];
+
+			for(string::iterator it=continuous_unit_1.begin(); it<continuous_unit_1.end(); ++it)
+			{
+				// unit=unit+(*it)+" ";
+				if((*it)!='-')                     //in order to avoid separation between negative sign and numbers
+				{
+					unit_1=unit_1+(*it)+" ";
+				}
+				else
+				{
+					unit_1=unit_1+(*it);
+				}
+			}
+			temp_s=temp_s+"\t"+(this->keyword)[3]+"   ["+unit_1+"]   "+(this->parameter)[5]+";\n";
+			temp_s=temp_s+"}";
 		}
+		else
+		{
+			temp_s=temp_s+"\n"+(this->keyword)[0];
+			string unit_2="";
+			string continuous_unit_2=(this->parameter)[0];
+			for(string::iterator it=continuous_unit_2.begin(); it<continuous_unit_2.end(); ++it)
+			{
+				// unit=unit+(*it)+" ";
+				if((*it)!='-')                     //in order to avoid separation between negative sign and numbers
+				{
+					unit_2=unit_2+(*it)+" ";
+				}
+				else
+				{
+					unit_2=unit_2+(*it);
+				}
+			}
+
+			temp_s=temp_s+"   ["+unit_2+"]   "+(this->parameter)[1]+";\n";
+		}
+
+		std::ofstream out(Dir);
+		out<<temp_s;
+		out.close();
 	
 	};
-
-
 
 	FLAG=0;
 	bug_information(FLAG);
@@ -294,7 +359,7 @@ void gmFoamTranslator::set_system()
 	}
 
 	int No_original_string=original_string.size();
-	string reg_str=(this->parameter)[No_parameter-2]+"[\\s]*[a-zA-Z0-9]+;";
+	string reg_str=(this->parameter)[No_parameter-2]+"[\\s]*[a-zA-Z0-9\\.]+;";
 	string replace_str=(this->parameter)[No_parameter-2]+"\t"+(this->parameter)[No_parameter-1]+";";
 	std::regex e (reg_str);
 	so.replace_reg(e,replace_str);
@@ -310,8 +375,6 @@ void gmFoamTranslator::set_system()
 	std::ofstream out(Dir);
 	out<<new_string;
 	out.close();
-
-
 
 	FLAG=0;
 	bug_information(FLAG);
@@ -341,7 +404,7 @@ void gmFoamTranslator::set_boundary_condition()
 	std::regex_match(temp_str,sm,e);    //sm[1] is the starttime extract from syatem file
 
 	string Boundary_file=sm[1];
-	std::map<std::string, std::string> file_map { {"U",U_header},{"p",P_header} };
+	std::map<std::string, std::string> file_map { {"U",U_header},{"p",P_header},{"p_rgh",p_rgh_header},{"alpha.water",alpha_water_header} };
 
 	string Dir_temp=getFilePath()+"/"+s+"/"+Boundary_file+"/"+(this->parameter)[0];
 	string file_dir=getFilePath()+"/"+s+"/"+Boundary_file;
@@ -433,8 +496,6 @@ void gmFoamTranslator::set_boundary_condition()
 		out<<original_string;
 		out.close();
 	};
-
-
 
 
 	FLAG=0;
