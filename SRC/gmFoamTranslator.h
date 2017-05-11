@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-10 00:22:52                                     *            
+*                           Last Modified time: 2017-05-10 22:25:12                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -31,6 +31,7 @@
 #include <sys/stat.h>
 #include "string_operator.h"
 #include "boundary_type.h"
+#include "postFoam.h"
 
 using namespace::std;
 // using namespace gmfoam_ns;
@@ -61,6 +62,7 @@ class gmFoamTranslator{
 		void add_fluid_phase();
 		void define_model_name();
 		void add_solid_phase();
+		void add_solid_fluid_interface();
 		void bug_information(int FLAG);
 
 

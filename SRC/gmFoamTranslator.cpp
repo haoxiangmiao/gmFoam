@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-04-18 01:06:48                                     *            
+*                           Last Modified time: 2017-05-10 22:58:29                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include "boundary_type.h"
+#include "postFoam.h"
 
 using namespace std;
 
@@ -99,6 +100,7 @@ void gmFoamTranslator::set_funcMap()
 	this->funcMap["add_fluid_phase"]=&gmFoamTranslator::add_fluid_phase;
 	this->funcMap["define_model_name"]=&gmFoamTranslator::define_model_name;
 	this->funcMap["add_solid_phase"]=&gmFoamTranslator::add_solid_phase;
+	this->funcMap["add_solid_fluid_interface"]=&gmFoamTranslator::add_solid_fluid_interface;
 
 }
 // ##################################################################################################################################################### 
@@ -797,6 +799,32 @@ void gmFoamTranslator::add_solid_phase()
 	FLAG=0;
 	bug_information(FLAG);
 }
+
+
+void gmFoamTranslator::add_solid_fluid_interface()
+{
+	int FLAG=-1;
+	extern string project_name;
+	string s= project_name;
+	postFoam pf=postFoam(s);
+	std::vector<string> boundary_name;
+	for (int i = 0; i < (this->parameter.size()); ++i)
+	{
+		boundary_name.push_back((this->parameter)[i]);
+	}
+
+	pf.set_transfer_boundary(boundary_name);
+
+	pf.fluid_nodes();
+	
+	pf.fluid_surfaces();
+
+	FLAG=0;
+
+	bug_information(FLAG);
+
+}
+
 
 
 void gmFoamTranslator::bug_information(int FLAG)
