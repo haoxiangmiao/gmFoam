@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  plus                                  |
+|  \\    /   O peration     | Version:  v1612+                                |
 |   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -10,53 +10,368 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
+    location    "0";
     object      alpha.water;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 0 0 0 0 0 0 ];
+dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform 1 ;
+internalField   nonuniform List<scalar> 
+320
+(
+1
+1
+1
+1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+0
+0
+0
+0
+1
+1
+1
+1
+)
+;
 
 boundaryField
 {
     top_fluid_surface
     {
         type            inletOutlet;
-   inletValue           uniform 0 ;
-
-		value           uniform 0 ;
-
+        inletValue      uniform 0;
+        value           uniform 0;
     }
-
-
     bottom_fluid_surface
     {
         type            zeroGradient;
-
     }
-
-    lateral_surface_4
-    {
-        type            zeroGradient;
-
-    }
-
-    lateral_surface_3
-    {
-        type            zeroGradient;
-
-    }
-
-    lateral_surface_2
-    {
-        type            zeroGradient;
-
-    }
-
     lateral_surface_1
     {
         type            zeroGradient;
-
+    }
+    lateral_surface_2
+    {
+        type            zeroGradient;
+    }
+    lateral_surface_3
+    {
+        type            zeroGradient;
+    }
+    lateral_surface_4
+    {
+        type            zeroGradient;
     }
 }
+
+
+// ************************************************************************* //

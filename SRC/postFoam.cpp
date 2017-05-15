@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-05-10 23:03:47                                     *            
+*                           Last Modified time: 2017-05-15 02:01:25                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -18,8 +18,42 @@
 #include "postFoam.h"
 #include <string>
 #include <sstream>
+#include <algorithm>  
 
 using namespace std;
+
+
+// class postFoam
+// {
+// 	public:
+// 		postFoam();
+// 		~postFoam();
+// 		postFoam(const string& str);
+// 		// std::map<string, std::vector<string>> getboundaryInfo();
+// 		void set_transfer_boundary(std::vector<string> boundary_name);
+// 		void get_project_name();
+// 		void get_transfer_boundary_name();
+// 		string fluid_folder_DIR();
+// 		string getFilePath();
+// 		void surface_load_preprocess();
+// 		std::map<int, int> surface_id_information();
+// 		string No_points();
+// 		string No_faces();
+// 		string No_internalfaces();
+// 		void fluid_nodes(); //write fluid nodes information to ESSI simulation folder
+// 		void fluid_surfaces(); //write fluid surfaces information to ESSI simulation folder
+// 		void boundary_pressure(double time); // write boundary pressure information to ESSI simulation folder
+// 		void ESSI_input_pressure_load(); //build the geometry mapping realtionship and write ESSI input_pressure_load fei file
+
+// 	private:
+// 		string project_name; 
+// 		std::vector<string> transfer_boundary_name;
+// 		std::vector<int> Foam_node_IDs;
+
+
+
+// };
+
 
 postFoam::postFoam(){};
 postFoam::~postFoam(){};
@@ -151,6 +185,43 @@ string postFoam::No_internalfaces()
 	return ret;
 }
 
+
+// void postFoam::fluid_nodes()     //Note: these nodes contain all nodes include both inside and boundary nodes
+// {
+// 	string No_points=(this->No_points());
+// 	string points_file_DIR=getFilePath()+"/"+project_name+"_fluid_simulation/constant/polyMesh/points";
+// 	string_operator so;
+// 	so.readfile2string(points_file_DIR);
+// 	string opening_flag="(";
+// 	string closing_flag=")";
+// 	string extracted_string=so.balanced_extractor(No_points,opening_flag,closing_flag); 
+
+// 	// cout<<extracted_string<<endl;
+// 	string output_string="";
+
+
+// 	string_operator so1=string_operator(extracted_string);
+
+// 	std::regex e("\\([-0-9\\s]+\\)");
+// 	std::regex_iterator<std::string::iterator> it1=so1.search_reg(e);
+// 	std::regex_iterator<std::string::iterator> rend;
+// 	while (it1 != rend)
+//     {
+//     	string output_string_component= it1->str();
+//  		vector<string> temp=so1.string_extractor_with_spaces(output_string_component,opening_flag,closing_flag);
+//  		output_string=output_string+temp[0]+"\n";
+//     	++it1;
+//    	}
+//   string output_dir=getFilePath()+"/"+project_name+"_ESSI_Simulation/foam_nodes.fei";
+// 	std::ofstream out(output_dir);
+// 	out<<output_string;
+// 	out.close();
+// 	// cout<<output_string<<endl;
+// }
+
+
+//################### Rewrite  fluid_nodes() function that it only output interface nodes , the output will have four columns: foam_node_ID  and three coordinates#############################################
+
 void postFoam::fluid_nodes()     //Note: these nodes contain all nodes include both inside and boundary nodes
 {
 	string No_points=(this->No_points());
@@ -169,20 +240,28 @@ void postFoam::fluid_nodes()     //Note: these nodes contain all nodes include b
 
 	std::regex e("\\([-0-9\\s]+\\)");
 	std::regex_iterator<std::string::iterator> it1=so1.search_reg(e);
-	std::regex_iterator<std::string::iterator> rend;
-	while (it1 != rend)
-    {
-    	string output_string_component= it1->str();
- 		vector<string> temp=so1.string_extractor_with_spaces(output_string_component,opening_flag,closing_flag);
- 		output_string=output_string+temp[0]+"\n";
-    	++it1;
-   	}
+	// std::regex_iterator<std::string::iterator> rend;
+
+
+	for (int i = 0; i < Foam_node_IDs.size(); ++i)
+	{
+		int current_Foam_ID=Foam_node_IDs[i];
+		std::regex_iterator<std::string::iterator> it1=so1.search_reg(e);
+		std::advance(it1,current_Foam_ID);
+		string output_string_component= it1->str();
+		vector<string> temp=so1.string_extractor_with_spaces(output_string_component,opening_flag,closing_flag);
+		output_string=output_string+std::to_string(current_Foam_ID)+" "+temp[0]+"\n";
+	}
+
    	string output_dir=getFilePath()+"/"+project_name+"_ESSI_Simulation/foam_nodes.fei";
 	std::ofstream out(output_dir);
 	out<<output_string;
 	out.close();
 	// cout<<output_string<<endl;
 }
+
+//######################################## Ending rewrite ################################################################################################################################################
+
 
 void postFoam::fluid_surfaces()   //Note: these surface are only boundary surfaces
 {
@@ -203,19 +282,57 @@ void postFoam::fluid_surfaces()   //Note: these surface are only boundary surfac
 
 	std::map<int, int> boundary_surface_id_information=surface_id_information();
 
+	int surface_ID;
+
+	// int foam_node_index=0;
+
+	string separator=" ";
+
 	for(std::map<int,int>::iterator it2=boundary_surface_id_information.begin(); it2!=boundary_surface_id_information.end(); ++it2)
 	{
 		int startFace=(it2->first);
 		int No_boundary_faces=(it2->second);
+
+		surface_ID=startFace;
 
 		for(int i=0; i<No_boundary_faces; ++i)
 		{
 			std::regex_iterator<std::string::iterator> it1=so1.search_reg(e);
 			std::advance(it1,startFace);
 			std::advance(it1,i);
+
 			string output_string_component=it1->str();
 			vector<string> temp=so1.string_extractor_with_spaces(output_string_component,opening_flag,closing_flag);
- 			output_string=output_string+temp[0]+"\n";
+
+			//################### add this section to extract all Foam_node_IDs ####################################
+
+			string_operator so_foam_nodes=string_operator(temp[0]);
+
+			std::vector<string> foam_nodes=so_foam_nodes.string_separator(temp[0],separator);
+
+			// cout<<foam_nodes[0]<<"next"<<foam_nodes[1]<<"next!"<<foam_nodes[2]<<"next!!"<<foam_nodes[3]<<endl;
+
+			int No_foam_nodes=foam_nodes.size();
+
+			std::vector<int>::iterator it;
+
+			for (int i = 0; i < No_foam_nodes; ++i)
+			{
+				it=find(Foam_node_IDs.begin(), Foam_node_IDs.end(),std::stoi(foam_nodes[i]));
+				if (it != Foam_node_IDs.end())
+   					std::cout << "Node No: "<<foam_nodes[i]<<" is already in our foam_nodes output list\n";
+ 				else
+    			{
+    				std::cout << "Adding new node No: "<<foam_nodes[i]<<" to our foam_nodes output list\n";
+    				Foam_node_IDs.push_back(std::stoi(foam_nodes[i]));	
+    				// foam_node_index=foam_node_index+1;
+    			}	
+
+			}
+			//################### Ending section ###########################################################
+
+ 			output_string=output_string+std::to_string(surface_ID)+" "+temp[0]+"\n";
+ 			surface_ID=surface_ID+1;
 		}
 	 }
 

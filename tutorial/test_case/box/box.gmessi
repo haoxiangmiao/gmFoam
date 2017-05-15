@@ -14,15 +14,17 @@ GmESSI.loadMshFile("box.msh")
 [Add_8NodeBrick{Physical_Group#4, MaterialNo:= 1 }]
 #[Add_8NodeBrick{Physical_Group#4, MaterialNo:= 4 }]
 
-
+[Add_Nodes_To_Physical_Group{Physical_Group#17, PhysicalNodeGroup:= "interface_node"}]
 #[Add_Acceleration_Field{FieldNo:= 1, AccX:= 0*g, AccY:= 0*g, AccZ:= -1*g}]
 
+
+#[Fix_Dofs{Physical_Group#16, DofTypes:= ux}]
 [Fix_Dofs{Physical_Group#16, DofTypes:= uy}]
 [Fix_Dofs{Physical_Group#16, DofTypes:= uz}]
 
 [Add_Node_Load_Imposed_Motion_Series{Physical_Group#16, DofType:= ux, DispScale:= 1*m, DispFile:= "dis.txt", VelScale:= 1*m/s, VelFile:= "vel.txt" , AccScale:= 1*m/s^2, AccFile:= "acc.txt"}]
 
-[New_Loading_Stage{StageName:= "imposed_motion"}]
+[New_Loading_Stage{StageName:= "solid_fluid_interaction"}]
 
 [Include{FileName:= "test_model_geometry.fei"}]
 
@@ -31,7 +33,7 @@ GmESSI.loadMshFile("box.msh")
 [Include{FileName:= "surface_load.fei"}]
 
 
-[Define_Solver{SolverName:= ProfileSPD }]
+[Define_Solver{SolverName:= UMFPack }]
 
 [Define_Dynamic_Newmark_Integrator{Gamma:= 0.5, Beta:= 0.25}]
 

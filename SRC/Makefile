@@ -6,7 +6,7 @@
 # Rev:               Version 1                                   | jeremic@ucdavis.edu                  #
 # Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     #
 # * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  # 
-#                           Last Modified time: 2017-05-10 22:57:24                                     #              
+#                           Last Modified time: 2017-05-11 17:51:46                                     #              
 #  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #         
 # The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     #
 # The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance# 
@@ -44,12 +44,15 @@ postFoam: postFoam.cpp
 		@mv ./postFoam.o $(BUILD_DIR)
 		@mv ./libpostFoam.so $(BUILD_DIR)
 
+sl_preprocess:
+	@sudo ln -sf /home/hexiang/git/gmFoam/SRC/surface_load_preprocess /usr/local/bin
+	@cd /usr/local/bin ; sudo chmod +x surface_load_preprocess
 # try: string_operator boundary_type gmFoamTranslator mesh_conversion
 # 	$(TOOUT) try.cpp -o try -L$(BUILD_DIR)  -lgmFoamTranslator -lboundary_type -lstring_operator -Wl,-rpath=$(BUILD_DIR)
 # 	@mv ./try $(BUILD_DIR)
 # 	@sudo ln -sf $(BUILD_DIR)/try /usr/local/bin 
 
-gmFoam: string_operator boundary_type postFoam gmFoamTranslator mesh_conversion
+gmFoam: string_operator boundary_type sl_preprocess postFoam gmFoamTranslator mesh_conversion
 		$(TOOUT) gmFoam.cpp -o gmFoam -L$(BUILD_DIR)  -lgmFoamTranslator -lpostFoam -lboundary_type -lstring_operator -Wl,-rpath=$(BUILD_DIR)
 		@mv ./gmFoam $(BUILD_DIR)
 		@sudo ln -sf $(BUILD_DIR)/gmFoam /usr/local/bin 

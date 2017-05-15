@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-05-10 22:58:29                                     *            
+*                           Last Modified time: 2017-05-15 01:38:58                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -815,9 +815,11 @@ void gmFoamTranslator::add_solid_fluid_interface()
 
 	pf.set_transfer_boundary(boundary_name);
 
-	pf.fluid_nodes();
+	pf.fluid_surfaces();  // firstly execute fluid_surfaces command to generate Foam_node_IDs list
+
+	pf.fluid_nodes();  	
 	
-	pf.fluid_surfaces();
+	pf.surface_load_preprocess();
 
 	FLAG=0;
 

@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-05-10 16:23:34                                     *            
+*                           Last Modified time: 2017-05-15 01:09:23                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -17,6 +17,7 @@
 #define POSTFOAM_H
 #include <iostream>
 #include "string_operator.h"
+#include <algorithm>  
 
 #ifdef _WIN32 
     #include <direct.h>
@@ -55,6 +56,7 @@ class postFoam
 	private:
 		string project_name; 
 		std::vector<string> transfer_boundary_name;
+		std::vector<int> Foam_node_IDs;
 
 
 
