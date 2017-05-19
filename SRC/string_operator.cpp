@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-05-18 19:54:26                                     *            
+*                           Last Modified time: 2017-05-18 20:51:53                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -111,28 +111,19 @@ std::vector<string> string_operator::string_separator(string& s1, string separat
 	vector<string> ret;
 	string temp_string="";
 	string::iterator it=s1.begin();
-	
-	while(it<s1.end())
+	for(; it<s1.end(); it++)
 	{
-		while(get_string_component(it)!=separator)
+		while((get_string_component(it)!=separator)&&(it<s1.end()))
 		{
 			temp_string=temp_string+get_string_component(it);
 			it=it+1;
 		}
-	
-		if(temp_string!="")
-		{
-			ret.push_back(temp_string);
-		}
 
+		ret.push_back(temp_string);
 		temp_string="";
-		it=it+1;
 	}
-
-	
 	return ret;	
 }
-
 
 
 string string_operator::delete_space(string& s2)
