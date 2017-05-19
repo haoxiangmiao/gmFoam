@@ -21,8 +21,8 @@ define algorithm With_no_convergence_check;
 
 simulate 50 steps using transient algorithm time_step = 0.005*s; 
 
+
+
  bye; 
-
-
 
 

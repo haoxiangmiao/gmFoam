@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-03-28 13:09:33                                     *            
+*                           Last Modified time: 2017-05-18 19:54:26                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -111,17 +111,25 @@ std::vector<string> string_operator::string_separator(string& s1, string separat
 	vector<string> ret;
 	string temp_string="";
 	string::iterator it=s1.begin();
-	for(; it<s1.end(); it++)
+	
+	while(it<s1.end())
 	{
-		while((get_string_component(it)!=separator)&&(it<s1.end()))
+		while(get_string_component(it)!=separator)
 		{
 			temp_string=temp_string+get_string_component(it);
 			it=it+1;
 		}
+	
+		if(temp_string!="")
+		{
+			ret.push_back(temp_string);
+		}
 
-		ret.push_back(temp_string);
 		temp_string="";
+		it=it+1;
 	}
+
+	
 	return ret;	
 }
 
@@ -172,8 +180,13 @@ void string_operator::replace_reg(std::regex e, string& replace_str)
 void string_operator::readfile2string(string Dir)
 {
 	std::ifstream input(Dir);
+
 	if (!input) 
-		std::cerr << "Could not open the file!" << std::endl;
+	{
+		std::cerr << "string_operator::readfile2string(string Dir)-Could not open the file!" << std::endl;
+		return;
+	}
+
 	else
 	{
 		string temp_s;

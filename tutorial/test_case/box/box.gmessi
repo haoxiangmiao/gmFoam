@@ -41,9 +41,6 @@ GmESSI.loadMshFile("box.msh")
 
 [Simulate_Using_Transient_Algorithm{NumSteps:= 50, TimeIncr:= 0.005*s}]
 
-[Bye{}]
-
-
 GmESSI.setLoadFile('SurfaceLoad.sl')   #***********Attention the postfix of the output filename must be sl************************#
 
 [Add_8NodeBrick_SurfaceLoad{Physical_Group#4, Physical_Group#17, Pressure:= p}]
@@ -54,3 +51,8 @@ GmESSI.setLoadFile('SurfaceLoad.sl')   #***********Attention the postfix of the 
 
 [Write_Data{Physical_Group#17, FileName:= ESSI_surface}]
 #[Var{variable:= p1, value:= 1*Pa}]
+
+
+[Bye{}]
+
+
