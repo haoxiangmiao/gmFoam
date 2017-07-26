@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-05-15 15:48:02                                     *            
+*                           Last Modified time: 2017-07-14 14:36:41                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -232,16 +232,16 @@ void postFoam::fluid_nodes()     //Note: these nodes contain all nodes include b
 	string closing_flag=")";
 	string extracted_string=so.balanced_extractor(No_points,opening_flag,closing_flag); 
 
-	// cout<<extracted_string<<endl;
 	string output_string="";
-
 
 	string_operator so1=string_operator(extracted_string);
 
-	std::regex e("\\([-0-9\\s]+\\)");
-	std::regex_iterator<std::string::iterator> it1=so1.search_reg(e);
-	// std::regex_iterator<std::string::iterator> rend;
 
+	//#################### Note that potential dot could exist in the coordinates of Foam Node when the coordinate is not integer###########################
+	std::regex e("\\([-0-9\\s.]+\\)");
+	//######################################################################################################################################################
+
+	std::regex_iterator<std::string::iterator> it1=so1.search_reg(e);
 
 	for (int i = 0; i < Foam_node_IDs.size(); ++i)
 	{
@@ -249,6 +249,7 @@ void postFoam::fluid_nodes()     //Note: these nodes contain all nodes include b
 		std::regex_iterator<std::string::iterator> it1=so1.search_reg(e);
 		std::advance(it1,current_Foam_ID);
 		string output_string_component= it1->str();
+
 		vector<string> temp=so1.string_extractor_with_spaces(output_string_component,opening_flag,closing_flag);
 		output_string=output_string+std::to_string(current_Foam_ID)+" "+temp[0]+"\n";
 	}
@@ -284,8 +285,6 @@ void postFoam::fluid_surfaces()   //Note: these surface are only boundary surfac
 
 	int surface_ID;
 
-	// int foam_node_index=0;
-
 	string separator=" ";
 
 	for(std::map<int,int>::iterator it2=boundary_surface_id_information.begin(); it2!=boundary_surface_id_information.end(); ++it2)
@@ -310,8 +309,6 @@ void postFoam::fluid_surfaces()   //Note: these surface are only boundary surfac
 
 			std::vector<string> foam_nodes=so_foam_nodes.string_separator(temp[0],separator);
 
-			// cout<<foam_nodes[0]<<"next"<<foam_nodes[1]<<"next!"<<foam_nodes[2]<<"next!!"<<foam_nodes[3]<<endl;
-
 			int No_foam_nodes=foam_nodes.size();
 
 			std::vector<int>::iterator it;
@@ -319,13 +316,13 @@ void postFoam::fluid_surfaces()   //Note: these surface are only boundary surfac
 			for (int i = 0; i < No_foam_nodes; ++i)
 			{
 				it=find(Foam_node_IDs.begin(), Foam_node_IDs.end(),std::stoi(foam_nodes[i]));
+
 				if (it != Foam_node_IDs.end())
    					std::cout << "Node No: "<<foam_nodes[i]<<" is already in our foam_nodes output list\n";
  				else
     			{
     				std::cout << "Adding new node No: "<<foam_nodes[i]<<" to our foam_nodes output list\n";
     				Foam_node_IDs.push_back(std::stoi(foam_nodes[i]));	
-    				// foam_node_index=foam_node_index+1;
     			}	
 
 			}
@@ -340,7 +337,6 @@ void postFoam::fluid_surfaces()   //Note: these surface are only boundary surfac
 	std::ofstream out(output_dir);
 	out<<output_string;
 	out.close();
-	// cout<<"final string"<<output_string<<endl;
 }
 
 

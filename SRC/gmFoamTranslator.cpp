@@ -6,7 +6,7 @@
 * Rev:               Version 1                                   | jeremic@ucdavis.edu                  *
 * Email:             hexwang@ucdavis.edu                         | Computational Geomechanics Group     *
 * * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * 
-*                           Last Modified time: 2017-05-15 17:07:53                                     *            
+*                           Last Modified time: 2017-07-14 14:44:02                                     *            
 *  * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *         
 * The copyright to the computer program(s) herein is the property of Hexiang Wang and Boris Jeremic     *
 * The program(s) may be used and/or copied only with written permission of Hexiang Wang or in accordance* 
@@ -126,15 +126,7 @@ void gmFoamTranslator::load_fluid_mesh()
 	extern string project_name;
 	string s=project_name;
 	s=s+"_fluid_simulation";
-	// string temp_str=(this->parameter)[0];            //note the calling of components here, first () then []
-	// string_operator so=string_operator((this->parameter)[0]);
-	// string::iterator it=temp_str.begin();
-	// for(; it!=temp_str.end(); ++it)
-	// {
-	// 	if(so.get_string_component(it)!=".")
-	// 		project_name=project_name+so.get_string_component(it);
-	// 	else break;
-	// }
+
 	string SPACE=" ";
 	string bash_call_string="gmsh_conversion"+SPACE+s;
 	system(bash_call_string.c_str());
@@ -550,8 +542,6 @@ void gmFoamTranslator::add_fluid_phase()
 	std::vector<string> physical_element=physical_boundary;
 	physical_element.insert(physical_element.end(),physical_volume.begin(),physical_volume.end());
 
-	// cout<<physical_element[5]<<physical_element[6]<<physical_element[7]<<endl;
-
 	// ##################################end concatenating#############################################################
 	std::map<int, std::vector<string>> NODE;		//node map: the first component is node index; the second component is whole node line.
 	std::map<int, std::vector<string>> ELEMENT;   //element map: the firsr component is element index, the second component is whole element line .msh file.
@@ -780,8 +770,11 @@ void gmFoamTranslator::add_fluid_phase()
 	out<<output_string;
 	out.close();
 
-	
 
+	// ######################### Added by Hexiang on July,14 to launch automatic mesh conversion after mesh file separation #######################
+	load_fluid_mesh();
+	//#############################################################################################################################################
+	
 	FLAG=0;
 	bug_information(FLAG);
 
