@@ -73,7 +73,7 @@ string boundary_type::generateBC()
 	{
 		if(vs.size()!=1)
 		{
-			cout<<"syntax error"<<endl;
+			cout<<"syntax error for noSlip boundary condition"<<endl;
 		}
 		else
 		{
@@ -84,7 +84,7 @@ string boundary_type::generateBC()
 	{
 		if(vs.size()!=1)
 		{
-			cout<<"syntax error"<<endl;
+			cout<<"syntax error for zeroGradient boundary condition"<<endl;
 		}
 		else
 		{
@@ -95,7 +95,7 @@ string boundary_type::generateBC()
 	{
 		if(vs.size()!=3)
 		{
-			cout<<"syntax error"<<endl;
+			cout<<"syntax error for pressureInletOutletVelocity boundary condition"<<endl;
 		}
 		else
 		{
@@ -112,7 +112,7 @@ string boundary_type::generateBC()
 	{
 		if(vs.size()!=3)
 		{
-			cout<<"syntax error"<<endl;
+			cout<<"syntax error for totalPressure boundary condition"<<endl;
 		}
 		else
 		{
@@ -128,7 +128,7 @@ string boundary_type::generateBC()
 	{
 		if(vs.size()!=3)
 		{
-			cout<<"syntax error"<<endl;
+			cout<<"syntax error for fixedFluxPressure boundary condition"<<endl;
 		}
 		else
 		{
@@ -145,7 +145,7 @@ string boundary_type::generateBC()
 	{
 		if(vs.size()!=5)
 		{
-			cout<<"syntax error"<<endl;
+			cout<<"syntax error for inletOutlet boundary condition"<<endl;
 		}
 		else
 		{
@@ -158,6 +158,19 @@ string boundary_type::generateBC()
 
 			ret="inletOutlet;\n   inletValue           "+part_ret+"\t\tvalue           "+part_ret1;
 
+		}
+	}
+
+	if (vs[0]=="empty")
+	{
+		if (vs.size()!=1)
+		{
+			cout<<"syntax error for empty boundary condition"<<endl;
+		}
+
+		else
+		{
+			ret = vs[0]+";\n";
 		}
 	}
 

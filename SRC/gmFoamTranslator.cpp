@@ -796,6 +796,8 @@ void gmFoamTranslator::add_solid_phase()
 
 void gmFoamTranslator::add_solid_fluid_interface()
 {
+	
+
 	int FLAG=-1;
 	extern string project_name;
 	string s= project_name;
